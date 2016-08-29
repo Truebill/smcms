@@ -32,7 +32,7 @@ describe('GithubBackend', () => {
     });
 
     it('returns null if file at path does not exist', async () => {
-      const value = await backend.getValue('test1.simple');
+      const value = await backend.getValue('test1.nothing');
       expect(value).to.be.null;
     });
   });
