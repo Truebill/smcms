@@ -1,41 +1,26 @@
-# npm-base
+# smcms
 
-A base package for creating NPM packages with ES2015.
+A small CMS for Node.js apps.
 
 ---
 
-Writing in ES2015 is an amazing experience. Setting up babel and the development environment in a kind of a pain.
+The goal of smcms is to be a CMS that can be plugged into an
+existing Node.js app in a matter of minutes.
 
-If you want to write a **NPM module** in ES2015 and publish to NPM with backward compatibility, this is the **easiest** way.
+smcms is made to be pluggable in order to support multiple
+backends.
 
-## Basic Usage
+The main concept behind smcms is little more than a key-value store. The notable exception here is that keys are namespaced
+so that you can request things like `my.namespace.*` to retrieve
+all keys within the `my.namespace` namespace.
 
-* Simply clone [this](https://github.com/kadirahq/npm-base) project.
-* Change the `package.json` as you want.
-* `lib/index.js` in your entry point.
-* Then publish to npm via `npm publish`.
+## Backends
+A backend is used to store the data, and must support certain
+operations:
+* read a
 
-## Linting
+## API Adapters
+API adapters are developed to make integrating smcms easy.
+For example, [Express](https://expressjs.com) middleware to expose an API.
 
-* ESLINT support is added to the project.
-* It's configured for ES2015 and inherited configurations from [graphql/graphql-js](https://github.com/graphql/graphql-js).
-* Use `npm run lint` to lint your code and `npm run lintfix` to fix common issues.
-
-## Testing
-
-* You can write test under `__test__` directory anywhere inside `lib` including sub-directories.
-* Then run `npm test` to test your code. (It'll lint your code as well).
-* You can also run `npm run testonly` to run tests without linting.
-
-## ES2015 Setup
-
-* ES2015 support is added with babel6.
-* After you publish your project to NPM, it can be run on older node versions and browsers without the support of Babel.
-* This project uses ES2015 and some of the upcoming features like `async await`.
-* You can change them with adding and removing [presets](http://jamesknelson.com/the-six-things-you-need-to-know-about-babel-6/).
-* All the polyfills you use are taken from the local `babel-runtime` package. So, this package won't add any global polyfills and pollute the global namespace.
-
-## Kudos
-
-* Babel6 and the team behind it.
-* Facebook's [graphql-js](https://github.com/graphql/graphql-js) authors for ESLint configurations and for the directory structure.
+Another example would be a [graphql-js](https://github.com/graphql/graphql-js) integration.
