@@ -5,4 +5,8 @@ export default class SMCMS {
     const options = Object.assign({}, defaultOptions, opts);
     this.backend = options.backend;
   }
+
+  getValue(key) {
+    return this.backend.getValue(key);
+  }
 }
