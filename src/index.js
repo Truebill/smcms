@@ -1,3 +1,2 @@
-export const sum = (a, b) => {
-  return new Promise(resolve => resolve(a + b));
-};
+/* eslint import/prefer-default-export:0 */
+export const sum = (a, b) => new Promise(resolve => resolve(a + b));
