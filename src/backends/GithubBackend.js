@@ -31,12 +31,20 @@ export default class GithubBackend {
       path += '.md';
     }
 
-    const response = await this.github.repos.getContent({
-      user: this.config.owner,
-      repo: this.config.repo,
-      path,
-      ref: this.config.branch,
-    });
+    let response;
+    try {
+      response = await this.github.repos.getContent({
+        user: this.config.owner,
+        repo: this.config.repo,
+        path,
+        ref: this.config.branch,
+      });
+    } catch (err) {
+      if (err.code === 404) {
+        return null;
+      }
+      throw err;
+    }
 
     if (response.content) {
       return Buffer.from(response.content, 'base64').toString().trim();
