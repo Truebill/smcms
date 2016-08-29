@@ -2,6 +2,8 @@
 
 A small CMS for Node.js apps.
 
+[![CircleCI](https://circleci.com/gh/Truebill/smcms.svg?style=svg)](https://circleci.com/gh/Truebill/smcms)
+
 ---
 
 The goal of smcms is to be a CMS that can be plugged into an
