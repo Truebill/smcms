@@ -37,5 +37,8 @@
     "babel-runtime": "6.x.x",
     "eslint-plugin-import": "1.x.x",
     "github": "2.5.2"
+  },
+  "engines": {
+    "node": ">=5.0.0"
   }
 }
