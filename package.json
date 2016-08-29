@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "babel-runtime": "6.x.x",
-    "eslint-plugin-import": "1.14.0"
+    "eslint-plugin-import": "1.x.x",
+    "github": "2.5.2"
   }
 }

@@ -1,11 +1,12 @@
 import { expect } from 'chai';
-import { sum } from '../';
+import SMCMS from '../';
 
 const { describe, it } = global;
 
-describe('sum', () => {
-  it('should add two numbers correctly', async () => {
-    const result = await sum(10, 20);
-    expect(result).to.be.equal(30);
+describe('SMCMS', () => {
+  it('sets backend from options', async () => {
+    const smcms = new SMCMS({ backend: 'foo' });
+
+    expect(smcms.backend).to.equal('foo');
   });
 });
