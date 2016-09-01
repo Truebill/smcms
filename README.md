@@ -18,7 +18,7 @@ so that you can request things like `my.namespace.*` to retrieve
 all keys within the `my.namespace` namespace.
 
 ## Stores
-A backend is used to store the data, and must support certain
+A store is used to store the data, and must support certain
 operations:
 * retrieve a value from a key
 * retrieve all keys and values under a namespace
