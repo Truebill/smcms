@@ -3,6 +3,7 @@
 A small CMS for Node.js apps.
 
 [![CircleCI](https://circleci.com/gh/Truebill/smcms.svg?style=svg)](https://circleci.com/gh/Truebill/smcms)
+[![npm](https://img.shields.io/npm/v/smcms.svg)](https://www.npmjs.com/package/smcms)
 
 ---
 
