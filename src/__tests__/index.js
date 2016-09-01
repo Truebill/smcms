@@ -4,9 +4,9 @@ import SMCMS from '../';
 const { describe, it } = global;
 
 describe('SMCMS', () => {
-  it('sets backend from options', async () => {
-    const smcms = new SMCMS({ backend: 'foo' });
+  it('sets store from options', async () => {
+    const smcms = new SMCMS({ store: 'foo' });
 
-    expect(smcms.backend).to.equal('foo');
+    expect(smcms.store).to.equal('foo');
   });
 });

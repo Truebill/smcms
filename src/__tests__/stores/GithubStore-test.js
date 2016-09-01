@@ -1,17 +1,17 @@
 import { expect } from 'chai';
-import GithubBackend from '../../backends/GithubBackend';
+import GithubStore from '../../backends/GithubStore';
 
 const { before, describe, it } = global;
 
-describe('GithubBackend', () => {
+describe('GithubStore', () => {
   it('sets rootPath', async () => {
-    const backend = new GithubBackend({ rootPath: 'foo' });
+    const backend = new GithubStore({ rootPath: 'foo' });
 
     expect(backend.config.rootPath).to.equal('foo');
   });
 
   it('sets auth', async () => {
-    const backend = new GithubBackend({ username: 'foo', token: 'bar' });
+    const backend = new GithubStore({ username: 'foo', token: 'bar' });
 
     expect(backend.config.token).to.equal('bar');
   });
@@ -19,7 +19,7 @@ describe('GithubBackend', () => {
   describe('getValue', () => {
     let backend;
     before(() => {
-      backend = new GithubBackend({
+      backend = new GithubStore({
         owner: 'truebill',
         repo: 'smcms',
         rootPath: 'testContent',

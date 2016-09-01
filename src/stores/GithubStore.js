@@ -5,7 +5,7 @@ const defaultConfig = {
   fileSuffix: '.md',
 };
 
-export default class GithubBackend {
+export default class GithubStore {
   constructor(conf) {
     this.config = Object.assign({}, defaultConfig, conf);
 
@@ -56,6 +56,6 @@ export default class GithubBackend {
   }
 
   getValuesInNamespace() {
-    throw new Error('getValuesInNamespace not yet supported for GithubBackend');
+    throw new Error('getValuesInNamespace not yet supported for GithubStore');
   }
 }
