@@ -10,14 +10,17 @@ export default class SMCMS {
   }
 
   rawValueToString(value) {
-    this.renderer(value);
+    return this.renderer(value);
   }
 
   getRawValue(key) {
     return this.store.getValue(key);
   }
 
-  getValue(key) {
-    return this.rawValueToString(this.getRawValue(key));
+  async getValue(key) {
+    const value = await this.getRawValue(key);
+    if (!value) return null;
+
+    return this.rawValueToString(value);
   }
 }
