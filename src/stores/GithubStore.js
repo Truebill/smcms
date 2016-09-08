@@ -90,8 +90,11 @@ export default class GithubStore {
     }
 
     if (response.content) {
-      const value = decode ? Buffer.from(response.content, 'base64').toString().trim() :
-        response.content;
+      const value = (
+        decode ?
+          Buffer.from(response.content, 'base64').toString() :
+          response.content
+        ).trim();
 
       const valuePreprocessor = valuePreprocessors[fileExtension(objectPath)];
       const processedValue = valuePreprocessor ?
