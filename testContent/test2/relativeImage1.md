@@ -1,1 +1,0 @@
-![Cat](images/cat.jpeg)

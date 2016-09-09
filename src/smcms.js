@@ -1,12 +1,17 @@
-const defaultOptions = {
-  renderer: value => value,
-};
+import DefaultRenderer from './renderers/DefaultRenderer';
 
 export default class SMCMS {
-  constructor(opts) {
-    const options = Object.assign({}, defaultOptions, opts);
-    this.store = options.store;
-    this.renderer = options.renderer;
+  constructor({ store, renderer = new DefaultRenderer() }) {
+    if (!store) {
+      throw new Error('Missing store');
+    }
+    this.store = store;
+
+    if (this.store.selfRenders) {
+      this.store.setRenderer(renderer);
+    }
+
+    this.renderer = renderer;
   }
 
   rawValueToString(value) {
@@ -18,9 +23,12 @@ export default class SMCMS {
   }
 
   async getValue(key) {
-    const value = await this.getRawValue(key);
+    const value = await this.store.getValue(key);
     if (!value) return null;
 
-    return this.rawValueToString(value);
+    if (!this.store.selfRenders) {
+      return this.renderer.render(value);
+    }
+    return value;
   }
 }
