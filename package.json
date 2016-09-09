@@ -22,7 +22,7 @@
     "nodemon": "1.10.x",
     "mocha": "3.x.x",
     "chai": "3.x.x",
-    "eslint": "3.4.x",
+    "eslint": "3.5.0",
     "babel-eslint": "6.x.x",
     "eslint-config-airbnb-base": "5.x.x",
     "eslint-plugin-babel": "3.x.x",
