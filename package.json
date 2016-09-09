@@ -27,7 +27,6 @@
     "babel-preset-latest": "6.x.x",
     "babel-preset-stage-2": "6.x.x",
     "chai": "3.x.x",
-    "chai-string": "1.x.x",
     "eslint": "3.4.x",
     "eslint-config-airbnb-base": "7.x.x",
     "eslint-plugin-babel": "3.3.x",
