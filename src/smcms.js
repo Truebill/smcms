@@ -1,14 +1,11 @@
 import path from 'path';
 import DefaultRenderer from './renderers/DefaultRenderer';
 import MarkdownRenderer from './renderers/MarkdownRenderer';
+import { getFileExtension } from './utils';
 
 const DEFAULT_EXT_RENDERERS = {
   md: MarkdownRenderer,
 };
-
-function getFileExtension(key) {
-  return key.substr(key.lastIndexOf('.') + 1);
-}
 
 function defaultGetRenderer(key) {
   const ext = getFileExtension(key);
@@ -35,8 +32,8 @@ export default class SMCMS {
     this.resolveRelativePath = resolveRelativePath;
   }
 
-  async getRawValue(key, options) {
-    return await this.store.getValue(key, options);
+  getRawValue(key, options) {
+    return this.store.getValue(key, options);
   }
 
   async getValue(key) {

@@ -1,14 +1,5 @@
 import marked from 'marked';
-
-function fileExtension(filePath) {
-  return filePath.substr(filePath.lastIndexOf('.') + 1);
-}
-
-function isUrl(str) {
-  // Matches URLs (naively).
-  const urlRegex = /^(?:[a-z]+:)?\/\//i;
-  return urlRegex.test(str);
-}
+import { getFileExtension, isUrl } from '../utils';
 
 /**
  * Replace relative image paths with a data URI of the image's contents.
@@ -20,7 +11,7 @@ async function relativeImagePathToDataURI(imagePath, { key, smcms }) {
 
   const imageKey = smcms.resolveRelativePath(key, imagePath);
   const imageContent = await smcms.getRawValue(imageKey, { decode: null });
-  const extension = fileExtension(imagePath);
+  const extension = getFileExtension(imagePath);
 
   // TODO: Inspect the contents to infer MIME type.
   return `data:image/${extension};base64,${imageContent}`;
