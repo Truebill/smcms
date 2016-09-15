@@ -1,31 +1,33 @@
-import path from 'path';
 import marked from 'marked';
 
 function fileExtension(filePath) {
   return filePath.substr(filePath.lastIndexOf('.') + 1);
 }
 
+function isUrl(str) {
+  // Matches URLs (naively).
+  const urlRegex = /^(?:[a-z]+:)?\/\//i;
+  return urlRegex.test(str);
+}
+
 /**
  * Replace relative image paths with a data URI of the image's contents.
  */
-async function relativeImagePathsToDataURIs(imagePath, { contentPath, getContentFromPath }) {
-  // Matches URLs (naively).
-  const urlRegex = /^(?:[a-z]+:)?\/\//i;
-
-  if (urlRegex.test(imagePath)) {
+async function relativeImagePathToDataURI(imagePath, { key, smcms }) {
+  if (isUrl(imagePath)) {
     return imagePath;
   }
 
-  const absoluteImagePath = path.join(path.dirname(contentPath), imagePath);
-  const imageContents = await getContentFromPath(absoluteImagePath);
+  const imageKey = smcms.resolveRelativePath(key, imagePath);
+  const imageContent = await smcms.getRawValue(imageKey, { decode: null });
   const extension = fileExtension(imagePath);
 
   // TODO: Inspect the contents to infer MIME type.
-  return `data:image/${extension};base64,${imageContents}`;
+  return `data:image/${extension};base64,${imageContent}`;
 }
 
 const defaultConfig = {
-  imagePathToUrl: relativeImagePathsToDataURIs,
+  imagePathToUrl: relativeImagePathToDataURI,
   markedConf: {
     sanitize: true,
     smartypants: true,
@@ -46,18 +48,11 @@ export default class MarkdownRenderer {
    * Takes some markdown content, and returns it with its image paths replaced (using the
    * imagePathToUrl config function).
    */
-  async render(content, { contentPath, getContentFromPath } = {}) {
-    if (this.config.imagePathToUrl === relativeImagePathsToDataURIs &&
-    !(contentPath && getContentFromPath)) {
-      throw new Error(
-        'The default imagePathToUrl requires `contentPath` and `getContentFromPath` render ' +
-        'options to resolve relative image content from Markdown');
-    }
-
+  async render(content, { key, smcms } = {}) {
     // Matches markdown image tags: ![alt text](path).
     const imageRegex = /!\[.*?\]\((.+?)\)/g;
 
-    // Map of image paths to image URLs.
+    // Map of image paths to URLs.
     const imageUrls = {};
 
     // Populate image path keys.
@@ -66,18 +61,20 @@ export default class MarkdownRenderer {
       tempMatch = imageRegex.exec(content);
       if (tempMatch) {
         const imagePath = tempMatch[1];
-        imageUrls[imagePath] = null;
+
+        if (!isUrl(imagePath)) {
+          imageUrls[imagePath] = imagePath;
+        }
       }
     } while (tempMatch);
 
-    // Populate image URLs using our configured imagePathToUrl function.
-    await Promise.all(Object.keys(imageUrls).map(async imagePath => {
-      imageUrls[imagePath] = await this.config.imagePathToUrl(imagePath, {
-        contentPath,
-        getContentFromPath,
-      });
-      return null;
-    }));
+    if (key && smcms) {
+      // Populate image URLs
+      await Promise.all(Object.keys(imageUrls).map(async imagePath => {
+        imageUrls[imagePath] = await this.config.imagePathToUrl(imagePath, { key, smcms });
+        return null;
+      }));
+    }
 
     // Replace image paths in content with image URLs.
     const markdownContent = content.replace(imageRegex, (match, imagePath) => {

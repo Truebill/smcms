@@ -2,9 +2,6 @@ import { expect } from 'chai';
 import GithubStore from '../../stores/GithubStore';
 
 const { before, describe, it } = global;
-const noOpRenderer = {
-  render: v => v,
-};
 
 describe('GithubStore', () => {
   it('sets rootPath', async () => {
@@ -19,19 +16,6 @@ describe('GithubStore', () => {
     expect(store.config.token).to.equal('bar');
   });
 
-  it('should selfRender', () => {
-    const store = new GithubStore();
-
-    expect(store.selfRenders).to.be.true;
-  });
-
-  it('should enable setting renderer', () => {
-    const store = new GithubStore();
-    store.setRenderer(noOpRenderer);
-
-    expect(store.renderer).to.equal(noOpRenderer);
-  });
-
   describe('getValue', () => {
     let store;
     before(() => {
@@ -40,17 +24,24 @@ describe('GithubStore', () => {
         repo: 'smcms',
         rootPath: 'testContent',
       });
-      store.setRenderer(noOpRenderer);
     });
 
     it('returns a value', async () => {
-      const value = await store.getValue('test1.simple');
-      expect(value.trim()).to.equal('Here is some **content**!');
+      const value = await store.getValue('test1/simple.md');
+
+      expect(value).to.equal('Here is some **content**!');
     });
 
     it('returns null if file at path does not exist', async () => {
-      const value = await store.getValue('test1.nothing');
+      const value = await store.getValue('test1/nothing');
+
       expect(value).to.be.null;
+    });
+
+    it('does not decode if passed an option', async () => {
+      const value = await store.getValue('test1/simple.md', { decode: null });
+
+      expect(value).to.equal('SGVyZSBpcyBzb21lICoqY29udGVudCoqIQo=');
     });
   });
 });

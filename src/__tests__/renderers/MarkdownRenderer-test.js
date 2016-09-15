@@ -1,6 +1,14 @@
 import { expect } from 'chai';
 import MarkdownRenderer from '../../renderers/MarkdownRenderer';
 
+const MOCK_RENDER_OPTIONS = {
+  key: 'KEY',
+  smcms: {
+    getRawValue: imageKey => `${imageKey}|RAW_VALUE`,
+    resolveRelativePath: (key, imagePath) => `${key}|${imagePath}`,
+  },
+};
+
 const { before, describe, it } = global;
 
 const simpleMarkdown = `
@@ -39,9 +47,7 @@ describe('MarkdownRenderer', () => {
     let renderer;
 
     it('should render markdown as HTML', async () => {
-      renderer = new MarkdownRenderer({
-        imagePathToUrl: v => v,
-      });
+      renderer = new MarkdownRenderer();
 
       const renderedContent = await renderer.render(simpleMarkdown);
       expect(renderedContent.trim()).to.equal('<h1 id="hello-world">Hello world</h1>');
@@ -52,40 +58,27 @@ describe('MarkdownRenderer', () => {
         renderer = new MarkdownRenderer();
       });
 
-      it('should throw when no options are provided', done => {
-        // XXX: is there a better way to do this with async/await?
-        renderer.render(simpleMarkdown)
-          .then(() => done('No error was thrown'))
-          .catch(() => done());
+      it('should not be used when options are missing', async () => {
+        const renderedContent = await renderer.render(imageMarkdown);
+
+        expect(renderedContent)
+          .to.contain('src="../foo.jpg"')
+          .and.contain('src="bar.jpg"');
       });
 
       it('should replace image paths with data URIs', async () => {
-        const renderedContent = await renderer.render(imageMarkdown, {
-          contentPath: '/foo/', // Not used, but required
-          getContentFromPath: () => 'SAMPLE_CONTENT',
-        });
+        const renderedContent = await renderer.render(imageMarkdown, MOCK_RENDER_OPTIONS);
+
+        const url1 = 'data:image/jpg;base64,KEY|../foo.jpg|RAW_VALUE';
+        const url2 = 'data:image/jpg;base64,KEY|bar.jpg|RAW_VALUE';
 
         expect(renderedContent)
-          .to.contain('<img src="data:image/jpg;base64,SAMPLE_CONTENT" alt="Image Foo">')
-          .and.contain('<img src="data:image/jpg;base64,SAMPLE_CONTENT" alt="Image Bar">');
-      });
-
-      it('should resolve absolute paths before getting content from path', async () => {
-        const renderedContent = await renderer.render(imageMarkdown, {
-          contentPath: '/base/content/path',
-          getContentFromPath: v => v,
-        });
-
-        expect(renderedContent)
-          .to.contain('<img src="data:image/jpg;base64,/base/foo.jpg" alt="Image Foo">')
-          .and.contain('<img src="data:image/jpg;base64,/base/content/bar.jpg" alt="Image Bar">');
+          .to.contain(`<img src="${url1}" alt="Image Foo">`)
+          .and.contain(`<img src="${url2}" alt="Image Bar">`);
       });
 
       it('should not change full image URLs', async () => {
-        const renderedContent = await renderer.render(urlImageMarkdown, {
-          contentPath: '/foo/', // Not used, but required
-          getContentFromPath: v => v, // Not used, but required
-        });
+        const renderedContent = await renderer.render(urlImageMarkdown, MOCK_RENDER_OPTIONS);
 
         expect(renderedContent)
           .to.contain('<img src="http://example.com/image.jpg" alt="Image Foo">');
@@ -100,7 +93,7 @@ describe('MarkdownRenderer', () => {
       });
 
       it('should replace image paths', async () => {
-        const renderedContent = await renderer.render(imageMarkdown);
+        const renderedContent = await renderer.render(imageMarkdown, MOCK_RENDER_OPTIONS);
         expect(renderedContent)
           .to.contain('<img src="/my-prefix/../foo.jpg" alt="Image Foo">')
           .and.contain('<img src="/my-prefix/bar.jpg" alt="Image Bar">');

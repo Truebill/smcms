@@ -1,21 +1,15 @@
 import { expect } from 'chai';
 import SMCMS from '../';
+import DefaultRenderer from '../renderers/DefaultRenderer';
+import MarkdownRenderer from '../renderers/MarkdownRenderer';
 
-const { describe, it } = global;
+const { before, describe, it } = global;
 
-const replaceRenderer = {
-  render: v => v.replace(/\d+/g, '#'),
-};
 const fooRenderer = {
   render: () => 'foo',
 };
 const echoStore = {
   getValue: k => k,
-};
-const selfRenderingEchoStore = {
-  getValue: k => k,
-  selfRenders: true,
-  setRenderer: () => {},
 };
 const nullStore = {
   getValue: () => null,
@@ -28,10 +22,18 @@ describe('SMCMS', () => {
     expect(smcms.store).to.equal('foo');
   });
 
-  it('sets renderer from options', async () => {
-    const smcms = new SMCMS({ store: 'foo', renderer: 'bar' });
+  it('sets getRenderer from options', async () => {
+    const getRenderer = () => {};
+    const smcms = new SMCMS({ store: 'foo', getRenderer });
 
-    expect(smcms.renderer).to.equal('bar');
+    expect(smcms.getRenderer).to.equal(getRenderer);
+  });
+
+  it('sets resolveRelativePath from options', async () => {
+    const resolveRelativePath = () => {};
+    const smcms = new SMCMS({ store: 'foo', resolveRelativePath });
+
+    expect(smcms.resolveRelativePath).to.equal(resolveRelativePath);
   });
 
   it('should throw if no store is set', () => {
@@ -52,7 +54,6 @@ describe('SMCMS', () => {
     it('returns null (without calling renderer) for null values', async () => {
       const smcms = new SMCMS({
         store: nullStore,
-        renderer: replaceRenderer,
       });
 
       expect(await smcms.getValue('some key')).to.equal(null);
@@ -61,19 +62,43 @@ describe('SMCMS', () => {
     it('should use custom renderer', async () => {
       const smcms = new SMCMS({
         store: echoStore,
-        renderer: fooRenderer,
+        getRenderer: () => fooRenderer,
       });
 
       expect(await smcms.getValue('some key')).to.equal('foo');
     });
+  });
 
-    it('should not use renderer when store self-renders', async () => {
+  describe('getRawValue', () => {
+    it('should not call renderer', async () => {
       const smcms = new SMCMS({
-        store: selfRenderingEchoStore,
-        renderer: fooRenderer,
+        store: echoStore,
+        getRenderer: () => fooRenderer,
       });
 
-      expect(await smcms.getValue('some value')).to.equal('some value');
+      expect(await smcms.getRawValue('some key')).to.equal('some key');
+    });
+  });
+
+  describe('default getRenderer', () => {
+    let smcms;
+
+    before(() => {
+      smcms = new SMCMS({
+        store: echoStore,
+      });
+    });
+
+    it('returns the Markdown renderer for .md files', () => {
+      const renderer = smcms.getRenderer('foo.md');
+
+      expect(renderer).to.be.an.instanceof(MarkdownRenderer);
+    });
+
+    it('returns the Default renderer for unknown files', () => {
+      const renderer = smcms.getRenderer('foo.asdf');
+
+      expect(renderer).to.be.an.instanceof(DefaultRenderer);
     });
   });
 });

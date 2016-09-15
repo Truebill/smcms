@@ -2,7 +2,6 @@ import GitHubApi from 'github';
 
 const defaultConfig = {
   branch: 'master',
-  fileSuffix: '.md',
 };
 
 export default class GithubStore {
@@ -11,8 +10,6 @@ export default class GithubStore {
       ...defaultConfig,
       ...conf,
     };
-
-    this.selfRenders = true;
 
     this.github = new GitHubApi();
 
@@ -25,17 +22,23 @@ export default class GithubStore {
     }
   }
 
-  setRenderer(renderer) {
-    this.renderer = renderer;
+  static decode(content) {
+    return Buffer.from(content, 'base64').toString();
   }
 
-  async getContentFromPath(contentPath, { decode = false, render = false } = {}) {
+  async getValue(key, { decode = GithubStore.decode } = {}) {
+    let path = key;
+
+    if (this.config.rootPath) {
+      path = `${this.config.rootPath}/${path}`;
+    }
+
     let response;
     try {
       response = await this.github.repos.getContent({
+        path,
         user: this.config.owner,
         repo: this.config.repo,
-        path: contentPath,
         ref: this.config.branch,
       });
     } catch (err) {
@@ -48,35 +51,15 @@ export default class GithubStore {
     let { content } = response;
 
     if (content) {
-      content = (decode ? Buffer.from(content, 'base64').toString() : content).trim();
+      content = (decode ? decode(content) : content).trim();
 
-      if (render) {
-        return this.renderer.render(content, {
-          contentPath,
-          getContentFromPath: this.getContentFromPath.bind(this),
-        });
-      }
       return content;
     }
 
     // TODO: Figure out if/how this can happen
     // eslint-disable-next-line no-console
-    console.warn('No content from github.repos.getContent for path', contentPath);
+    console.warn('No content from github.repos.getContent for path', path);
     return null;
-  }
-
-  async getValue(key) {
-    const pathParts = key.split('.');
-    if (this.config.rootPath) {
-      pathParts.unshift(this.config.rootPath);
-    }
-
-    let objectPath = pathParts.join('/');
-    if (this.config.fileSuffix) {
-      objectPath += this.config.fileSuffix;
-    }
-
-    return await this.getContentFromPath(objectPath, { decode: true, render: true });
   }
 
   // eslint-disable-next-line class-methods-use-this
