@@ -27,13 +27,21 @@ describe('GithubStore', () => {
     });
 
     it('returns a value', async () => {
-      const value = await store.getValue('test1.simple');
+      const value = await store.getValue('test1/simple.md');
+
       expect(value).to.equal('Here is some **content**!');
     });
 
     it('returns null if file at path does not exist', async () => {
-      const value = await store.getValue('test1.nothing');
+      const value = await store.getValue('test1/nothing');
+
       expect(value).to.be.null;
+    });
+
+    it('does not decode if passed an option', async () => {
+      const value = await store.getValue('test1/simple.md', { decode: null });
+
+      expect(value).to.equal('SGVyZSBpcyBzb21lICoqY29udGVudCoqIQo=');
     });
   });
 });

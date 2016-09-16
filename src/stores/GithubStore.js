@@ -2,15 +2,16 @@ import GitHubApi from 'github';
 
 const defaultConfig = {
   branch: 'master',
-  fileSuffix: '.md',
 };
 
 export default class GithubStore {
   constructor(conf) {
-    this.config = Object.assign({}, defaultConfig, conf);
+    this.config = {
+      ...defaultConfig,
+      ...conf,
+    };
 
-    this.github = new GitHubApi({
-    });
+    this.github = new GitHubApi();
 
     if (this.config.token) {
       this.github.authenticate({
@@ -21,22 +22,23 @@ export default class GithubStore {
     }
   }
 
-  async getValue(key) {
-    const pathParts = key.split('.');
+  static decode(content) {
+    return Buffer.from(content, 'base64').toString();
+  }
+
+  async getValue(key, { decode = GithubStore.decode } = {}) {
+    let path = key;
+
     if (this.config.rootPath) {
-      pathParts.unshift(this.config.rootPath);
-    }
-    let path = pathParts.join('/');
-    if (this.config.fileSuffix) {
-      path += '.md';
+      path = `${this.config.rootPath}/${path}`;
     }
 
     let response;
     try {
       response = await this.github.repos.getContent({
+        path,
         user: this.config.owner,
         repo: this.config.repo,
-        path,
         ref: this.config.branch,
       });
     } catch (err) {
@@ -46,15 +48,21 @@ export default class GithubStore {
       throw err;
     }
 
-    if (response.content) {
-      return Buffer.from(response.content, 'base64').toString().trim();
+    let { content } = response;
+
+    if (content) {
+      content = (decode ? decode(content) : content).trim();
+
+      return content;
     }
 
     // TODO: Figure out if/how this can happen
+    // eslint-disable-next-line no-console
     console.warn('No content from github.repos.getContent for path', path);
     return null;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   getValuesInNamespace() {
     throw new Error('getValuesInNamespace not yet supported for GithubStore');
   }
