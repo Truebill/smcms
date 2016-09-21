@@ -11,6 +11,7 @@
       "optionalDependencies": false
     }],
     "generator-star-spacing": 0,
-    "babel/generator-star-spacing": 1
+    "babel/generator-star-spacing": 1,
+    "arrow-parens": 0
   }
 }

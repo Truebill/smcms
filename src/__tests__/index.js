@@ -37,7 +37,7 @@ describe('SMCMS', () => {
   });
 
   it('should throw if no store is set', () => {
-    const create = () => new new SMCMS({ renderer: 'baz' });
+    const create = () => new SMCMS({ renderer: 'baz' });
 
     expect(create).to.throw(Error);
   });
