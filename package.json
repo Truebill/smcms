@@ -27,7 +27,7 @@
     "babel-preset-latest": "6.x.x",
     "babel-preset-stage-2": "6.x.x",
     "chai": "3.x.x",
-    "eslint": "3.4.x",
+    "eslint": "3.5.x",
     "eslint-config-airbnb-base": "7.x.x",
     "eslint-plugin-babel": "3.3.x",
     "eslint-plugin-import": "1.x.x",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "babel-runtime": "6.x.x",
-    "github": "3.0.0",
+    "github": "3.1.x",
     "marked": "0.3.x"
   },
   "engines": {
