@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "babel-runtime": "6.x.x",
-    "github": "3.1.x",
+    "github": "5.0.0",
     "marked": "0.3.x"
   },
   "engines": {
