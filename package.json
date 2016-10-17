@@ -28,7 +28,7 @@
     "babel-preset-stage-2": "6.x.x",
     "chai": "3.x.x",
     "eslint": "3.5.x",
-    "eslint-config-airbnb-base": "7.x.x",
+    "eslint-config-airbnb-base": "9.0.0",
     "eslint-plugin-babel": "3.3.x",
     "eslint-plugin-import": "1.x.x",
     "mocha": "3.x.x",
