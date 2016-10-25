@@ -25,7 +25,7 @@
     "babel-plugin-transform-runtime": "6.x.x",
     "babel-polyfill": "6.x.x",
     "babel-preset-latest": "6.x.x",
-    "babel-preset-stage-2": "6.x.x",
+    "babel-preset-stage-2": "6.18.0",
     "chai": "3.x.x",
     "eslint": "3.5.x",
     "eslint-config-airbnb-base": "7.x.x",
